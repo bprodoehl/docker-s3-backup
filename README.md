@@ -9,7 +9,7 @@ Make sure to mount volumes appropriately so that the container has access to the
 docker run -d -P \
     -v /folder/on/host:/folder/in/container:ro \
     -e "ADMIN_USER=myadminuser" \
-    -e "USER_PASSWORD=myadminpassword"
+    -e "USER_PASSWORD=myadminpassword" \
     bprodoehl/s3-backup
 
 ```
