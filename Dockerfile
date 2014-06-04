@@ -48,5 +48,8 @@ EXPOSE 22
 
 ADD startup.sh /tmp/startup.sh
 
+ADD files/ /tmp/
+RUN cd /tmp/restore && npm install
+
 # Start ssh services.
 CMD ["/bin/bash", "/tmp/startup.sh"]
