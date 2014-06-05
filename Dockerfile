@@ -41,6 +41,10 @@ RUN add-apt-repository -y ppa:chris-lea/node.js
 RUN apt-get update
 RUN apt-get install -y python-software-properties python g++ make nodejs
 
+# get the PHP tool to replace the domain in a WordPress or Drupal DB
+RUN apt-get install -y php5-cli php5-mysql git
+RUN cd /tmp && git clone https://github.com/interconnectit/Search-Replace-DB
+
 RUN mkdir /var/run/sshd
 
 # expose the necessary ports

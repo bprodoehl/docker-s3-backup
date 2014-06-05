@@ -54,7 +54,14 @@ module.exports = function (grunt) {
                               ' --password=' + process.env.DB_PASSWORD +
                               ' --host=' + process.env.DB_PORT_3306_TCP_ADDR +
                               ' --port=' + process.env.DB_PORT_3306_TCP_PORT +
-                              ' ' + process.env.DB_NAME + ' < tmp/cleaned.sql'
+                              ' ' + process.env.DB_NAME + ' < tmp/latest.sql',
+          replace_domain: 'php /tmp/Search-Replace-DB/srdb.cli.php' +
+                               ' --user=' + process.env.DB_USER +
+                               ' --pass=' + process.env.DB_PASSWORD +
+                               ' --host=' + process.env.DB_PORT_3306_TCP_ADDR +
+                               ' --name=' + process.env.DB_NAME +
+                               ' --search=' + process.env.WP_ORIG_DOMAIN +
+                               ' --replace=' + process.env.WP_NEW_DOMAIN
         },
 
         copy: {
@@ -65,17 +72,6 @@ module.exports = function (grunt) {
                 src: ['**'],
                 dest: '/app'
             },
-        },
-
-        replace: {
-            wpdomain: {
-                src: ['tmp/latest.sql'],
-                dest: 'tmp/cleaned.sql',
-                replacements: [{
-                    from: process.env.WP_ORIG_DOMAIN,
-                    to: process.env.WP_NEW_DOMAIN
-                }]
-            }
         }
     });
 
@@ -84,15 +80,14 @@ module.exports = function (grunt) {
                                    'exec:unzip_wordpress',
                                    'copy:wordpress',
                                    'exec:unzip_db',
-                                   'replace:wpdomain',
                                    'exec:mysql_create_user',
                                    'exec:mysql_create_db',
                                    'exec:mysql_grant_user',
-                                   'exec:mysql_restore']);
+                                   'exec:mysql_restore',
+                                   'exec:replace_domain']);
 
     grunt.loadNpmTasks('grunt-aws-s3');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-exec');
-    grunt.loadNpmTasks('grunt-text-replace');
 };
