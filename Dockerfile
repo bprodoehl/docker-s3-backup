@@ -5,20 +5,13 @@
 #    This container is capable of acting as a Jenkins slave over SSH,
 #    backing up folders and MySQL databases to Amazon S3.
 #
-# VERSION               0.0.1
+# VERSION               0.1.0
 
-FROM      ubuntu:14.04
+FROM      phusion/baseimage:0.9.15
 MAINTAINER Connectify <bprodoehl@connectify.me>
 
-RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
-
-# Keep the image as small as possible by disabling apt cache and compressing the apt index
-RUN echo 'Dir::Cache { srcpkgcache ""; pkgcache ""; }' > /etc/apt/apt.conf.d/02nocache
-RUN echo 'Acquire::GzipIndexes "true"; Acquire::CompressionTypes::Order:: "gz";' > /etc/apt/apt.conf.d/02compress-indexes
-
-RUN apt-get -y update
-RUN apt-get -y upgrade
-RUN apt-get -y install software-properties-common openssh-server s3cmd zip bzip2
+RUN apt-get update && apt-get -y dist-upgrade
+RUN apt-get -y install software-properties-common s3cmd zip bzip2
 
 # install default JRE
 RUN apt-get -y install --no-install-recommends default-jre
@@ -37,23 +30,19 @@ RUN apt-get update
 RUN apt-get -y install mariadb-client
 
 # install Node.js
-RUN add-apt-repository -y ppa:chris-lea/node.js
-RUN apt-get update
+RUN curl -sL https://deb.nodesource.com/setup | sudo bash -
 RUN apt-get install -y python-software-properties python g++ make nodejs
 
 # get the PHP tool to replace the domain in a WordPress or Drupal DB
 RUN apt-get install -y php5-cli php5-mysql git
 RUN cd /tmp && git clone https://github.com/interconnectit/Search-Replace-DB
 
-RUN mkdir /var/run/sshd
-
 # expose the necessary ports
 EXPOSE 22
-
-ADD startup.sh /tmp/startup.sh
 
 ADD files/ /tmp/
 RUN cd /tmp/restore && npm install
 
-# Start ssh services.
-CMD ["/bin/bash", "/tmp/startup.sh"]
+ADD runit/create-admin-user.sh /etc/my_init.d/10-create-admin-user.sh
+
+CMD ["/sbin/my_init"]
