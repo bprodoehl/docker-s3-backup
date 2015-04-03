@@ -9,7 +9,7 @@ cd $DIR
 ./node_modules/.bin/grunt exec:unzip_wordpress
 ./node_modules/.bin/grunt copy:wordpress
 ./node_modules/.bin/grunt exec:unzip_db
-./node_modules/.bin/grunt exec:mysql_create_db
-./node_modules/.bin/grunt exec:mysql_grant_user
+#./node_modules/.bin/grunt exec:mysql_create_db
+#./node_modules/.bin/grunt exec:mysql_grant_user
 ./node_modules/.bin/grunt exec:mysql_restore
 ./node_modules/.bin/grunt exec:replace_domain
